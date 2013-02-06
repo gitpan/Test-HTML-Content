@@ -37,7 +37,7 @@ use vars qw( $tidy );
   xpath_ok no_xpath xpath_count
   );
 
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 my $Test = Test::Builder->new;
 
@@ -68,6 +68,12 @@ sub __node_content {
   if ($can_xpath eq 'XML::XPath') { return XML::XPath::XMLParser::as_string($node) };
   if ($can_xpath eq 'XML::LibXML') { return $node->toString };
 };
+
+sub __text_content {
+  my $node = shift;
+  if ($can_xpath eq 'XML::XPath') { return $node->string_value };
+  if ($can_xpath eq 'XML::LibXML') { return $node->textContent };
+}
 
 sub __match_comment {
   my ($text,$template) = @_;
@@ -276,7 +282,8 @@ sub __get_node_content {
   my ($node,$name) = @_;
 
   if ($name eq '_content') {
-    return $node->textContent()
+    return __text_content( $node )
+#    return $node->textContent()
   } else {
     return $node->getAttribute($name)
   };
